@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイタスク - PARK</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: #1a1d3a;
+            border-bottom: 3px solid #4a5fd9;
+            padding: 16px 0;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .company-name {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 32px 60px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            color: #1a1d3a;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 8px 20px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .filter-tab:hover {
+            border-color: #4a5fd9;
+            color: #4a5fd9;
+        }
+
+        .filter-tab.active {
+            background: #4a5fd9;
+            border-color: #4a5fd9;
+            color: white;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .project-card-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: #4a5fd9;
+        }
+
+        .project-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .project-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1d3a;
+            line-height: 1.4;
+            flex: 1;
+            margin-right: 12px;
+        }
+
+        .project-card-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .badge-進行中 {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-企画中 {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-レビュー {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .badge-完了 {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .project-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .project-card-date {
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .project-participants {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .participant-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .participant-avatar:nth-child(2) {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin-left: -8px;
+        }
+
+        .participant-avatar:nth-child(3) {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            margin-left: -8px;
+        }
+
+        .participant-avatar:nth-child(4) {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            margin-left: -8px;
+        }
+
+        .participant-avatar:nth-child(5) {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            margin-left: -8px;
+        }
+
+        .participant-more {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 600;
+            border: 2px solid white;
+            margin-left: -8px;
+        }
+
+        .projects-table {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 100px 1fr 180px 150px;
+            gap: 24px;
+            padding: 16px 24px;
+            background: #fafafa;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .projects-list {
+            display: grid;
+            gap: 1px;
+            background: #e0e0e0;
+        }
+
+        .project-row {
+            background: white;
+            padding: 20px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: grid;
+            grid-template-columns: 100px 1fr 180px 150px;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .project-row:hover {
+            background: #f9fafb;
+        }
+
+        .project-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .badge-進行中 {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-企画中 {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-レビュー {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .badge-完了 {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .project-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .project-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1d3a;
+        }
+
+        .project-description {
+            color: #6b7280;
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .project-date {
+            color: #9ca3af;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .project-status-text {
+            color: #6b7280;
+            font-size: 13px;
+            text-align: right;
+        }
+
+        .back-button {
+            background: transparent;
+            color: #4a5fd9;
+            border: 1px solid #4a5fd9;
+            padding: 10px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin-bottom: 24px;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            background: #4a5fd9;
+            color: white;
+        }
+
+        .detail-header {
+            background: white;
+            padding: 32px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .detail-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1d3a;
+            margin-bottom: 16px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .status-badge.badge-進行中 {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-badge.badge-企画中 {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.badge-レビュー {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .status-badge.badge-完了 {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 32px;
+            padding-top: 16px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 13px;
+            color: #6b7280;
+            align-items: center;
+        }
+
+        .detail-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-participants {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-participants-label {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .detail-participants-avatars {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .detail-section {
+            background: white;
+            padding: 32px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1d3a;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tasks-list {
+            display: grid;
+            gap: 1px;
+            background: #e0e0e0;
+            border: 1px solid #e0e0e0;
+        }
+
+        .task-card {
+            background: white;
+            padding: 12px 24px;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .task-card:hover {
+            background: #f9fafb;
+        }
+
+        .task-card.completed {
+            opacity: 0.5;
+        }
+
+        .task-card.completed .task-title {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .task-checkbox:hover {
+            border-color: #4a5fd9;
+        }
+
+        .task-checkbox.checked {
+            background: #4a5fd9;
+            border-color: #4a5fd9;
+        }
+
+        .task-checkbox.checked::after {
+            content: "✓";
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .task-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0;
+        }
+
+        .task-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1d3a;
+        }
+
+        .task-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .task-priority {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: #fee;
+            color: #c33;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-low {
+            background: #e0f2fe;
+            color: #075985;
+        }
+
+        .task-description {
+            display: none;
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0;
+            border-top: none;
+            margin-top: 6px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .task-deadline {
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        .task-progress-info {
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        .task-outsource-button {
+            background: transparent;
+            color: #4a5fd9;
+            border: 1px solid #4a5fd9;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .task-outsource-button:hover {
+            background: #4a5fd9;
+            color: white;
+        }
+
+        .task-button {
+            background: #4a5fd9;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .task-button:hover {
+            background: #3a4fc9;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 70px;
+            margin-bottom: 40px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 22px;
+            top: 2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #e0e0e0;
+            z-index: 1;
+        }
+
+        .timeline-dot.completed {
+            background: #4a5fd9;
+            border-color: #4a5fd9;
+        }
+
+        .timeline-content {
+            background: #fafafa;
+            border-radius: 4px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .timeline-date {
+            color: #9ca3af;
+            font-weight: 500;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            color: #1a1d3a;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .timeline-description {
+            color: #6b7280;
+            line-height: 1.7;
+            font-size: 13px;
+        }
+
+        .history-resources {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .resources-label {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .resource-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .resource-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            color: #4a5fd9;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .resource-link:hover {
+            border-color: #4a5fd9;
+            background: #f0f4ff;
+        }
+
+        /* 議事録モーダル */
+        .minutes-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .minutes-modal.visible {
+            display: flex;
+        }
+
+        .minutes-content {
+            background: white;
+            border-radius: 4px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .minutes-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .minutes-close {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .minutes-close:hover {
+            color: #1a1d3a;
+        }
+
+        .minutes-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1d3a;
+            margin: 0;
+            padding-right: 40px;
+        }
+
+        .minutes-body {
+            padding: 24px 32px;
+        }
+
+        .minutes-section {
+            margin-bottom: 24px;
+        }
+
+        .minutes-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1d3a;
+            margin-bottom: 12px;
+        }
+
+        .minutes-text {
+            color: #374151;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        /* タスク詳細ページ */
+        .task-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .task-detail-modal.visible {
+            display: flex;
+        }
+
+        .task-detail-content-wrapper {
+            background: white;
+            border-radius: 4px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .task-detail-header-modal {
+            padding: 24px 32px;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .task-detail-close {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-detail-close:hover {
+            color: #1a1d3a;
+        }
+
+        .task-detail-title-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1d3a;
+            margin-bottom: 12px;
+        }
+
+        .task-detail-meta-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .task-detail-body {
+            padding: 24px 32px;
+        }
+
+        .task-detail-section {
+            margin-bottom: 32px;
+        }
+
+        .task-detail-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .task-detail-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1d3a;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .task-detail-text {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 16px;
+            line-height: 1.8;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .task-objectives-list,
+        .task-deliverables-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-objectives-list li {
+            padding-left: 24px;
+            position: relative;
+            font-size: 14px;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .task-objectives-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4a5fd9;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .task-deliverables-list li {
+            padding: 10px 12px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-deliverables-list li::before {
+            content: "📄";
+            font-size: 14px;
+        }
+
+        .risks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .risk-item {
+            padding: 12px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #f59e0b;
+            border-radius: 4px;
+        }
+
+        .risk-item.impact-high {
+            border-left-color: #ef4444;
+        }
+
+        .risk-item.impact-medium {
+            border-left-color: #f59e0b;
+        }
+
+        .risk-item.impact-low {
+            border-left-color: #10b981;
+        }
+
+        .risk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .risk-impact {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .risk-impact.impact-high {
+            background: #fee;
+            color: #c33;
+        }
+
+        .risk-impact.impact-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .risk-impact.impact-low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .risk-description {
+            color: #374151;
+            font-size: 13px;
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+
+        .risk-mitigation {
+            color: #6b7280;
+            font-size: 12px;
+            padding-left: 12px;
+            border-left: 2px solid #e0e0e0;
+        }
+
+        .risk-mitigation::before {
+            content: "対策: ";
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .task-resources-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .task-resource-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .task-resource-item:hover {
+            border-color: #4a5fd9;
+        }
+
+        .task-resource-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1a1d3a;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .task-resource-type {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: normal;
+            margin-left: 8px;
+        }
+
+        .task-resource-link-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #4a5fd9;
+            border-radius: 3px;
+            color: #4a5fd9;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .task-resource-link-btn:hover {
+            background: #4a5fd9;
+            color: white;
+        }
+
+        .task-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 12px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #1a1d3a;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4a5fd9;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: 600;
+            color: #1a1d3a;
+        }
+
+        .task-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .task-tag {
+            padding: 4px 10px;
+            background: #f0f4ff;
+            border: 1px solid #4a5fd9;
+            border-radius: 3px;
+            font-size: 11px;
+            color: #4a5fd9;
+            font-weight: 500;
+        }
+
+        .dependencies-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .dependencies-list li {
+            padding: 8px 10px;
+            background: #fafafa;
+            border-left: 3px solid #4a5fd9;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 1024px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .task-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .header-content {
+                padding: 0 16px;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-header,
+            .detail-section {
+                padding: 20px;
+            }
+
+            .task-detail-content-wrapper {
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .task-detail-header-modal,
+            .task-detail-body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">PARK</div>
+                <div class="company-name">株式会社プレスマン</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- プロジェクト一覧ページ -->
+        <div id="projectsListPage">
+            <div class="page-header">
+                <h1>マイタスク</h1>
+            </div>
+            
+            <div class="filter-tabs" style="margin-bottom: 24px;">
+                <button class="filter-tab active" onclick="filterProjects('all')">すべて</button>
+                <button class="filter-tab" onclick="filterProjects('進行中')">進行中</button>
+                <button class="filter-tab" onclick="filterProjects('企画中')">企画中</button>
+                <button class="filter-tab" onclick="filterProjects('レビュー')">レビュー</button>
+                <button class="filter-tab" onclick="filterProjects('完了')">完了</button>
+            </div>
+            
+            <div class="projects-grid" id="projectsList"></div>
+        </div>
+        
+        <!-- プロジェクト詳細ページ -->
+        <div id="projectDetailPage" style="display: none;">
+            <button class="back-button" onclick="backToList()">← 一覧に戻る</button>
+            
+            <div class="detail-header">
+                <span class="status-badge" id="detailStatus"></span>
+                <h2 id="detailTitle"></h2>
+                <div class="detail-meta" id="detailMeta"></div>
+            </div>
+            
+            <!-- 直近のタスク -->
+            <section class="detail-section">
+                <h3 class="section-title">直近のタスク</h3>
+                <div id="tasksList" class="tasks-list"></div>
+            </section>
+            
+            <!-- ヒストリー -->
+            <section class="detail-section">
+                <h3 class="section-title">ヒストリー</h3>
+                <div id="historyTimeline" class="timeline"></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- タスク詳細モーダル -->
+    <div id="taskDetailModal" class="task-detail-modal">
+        <div class="task-detail-content-wrapper">
+            <div class="task-detail-header-modal">
+                <button class="task-detail-close" onclick="closeTaskDetail()">×</button>
+                <div class="task-detail-title-section">
+                    <h2 id="modalTaskTitle"></h2>
+                    <div class="task-detail-meta-badges">
+                        <span id="modalTaskPriority" class="task-priority"></span>
+                        <span id="modalTaskStatus" class="status-badge"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="task-detail-body">
+                <div class="task-detail-section">
+                    <div class="task-detail-section-title">タグ</div>
+                    <div class="task-tags" id="modalTags"></div>
+                </div>
+
+                <div class="task-detail-section">
+                    <div class="task-detail-section-title">依存関係</div>
+                    <ul class="dependencies-list" id="modalDependencies"></ul>
+                </div>
+                
+                <div class="task-detail-section">
+                    <div class="task-detail-section-title">背景・経緯</div>
+                    <div class="task-detail-text" id="modalBackground"></div>
+                </div>
+                
+                <div class="task-detail-section">
+                    <div class="task-detail-section-title">タスク内容</div>
+                    <div class="task-detail-text" id="modalContent"></div>
+                </div>
+                
+                <div class="task-detail-section">
+                    <div class="task-detail-section-title">目標・達成基準</div>
+                    <ul class="task-objectives-list" id="modalObjectives"></ul>
+                </div>
+                
+                <div class="task-detail-section">
+                    <div class="task-detail-section-title">成果物</div>
+                    <ul class="task-deliverables-list" id="modalDeliverables"></ul>
+                </div>
+                
+                <div class="task-detail-section">
+                    <div class="task-detail-section-title">リスクと対策</div>
+                    <div id="modalRisks" class="risks-list"></div>
+                </div>
+                
+                <div class="task-detail-section">
+                    <div class="task-detail-section-title">参考資料</div>
+                    <div class="task-resources-list" id="modalResources"></div>
+                </div>
+
+                <div style="margin-top: 24px; text-align: center;">
+                    <button class="task-button" style="padding: 12px 32px;" onclick="handleTaskAction()">案件化</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 議事録モーダル -->
+    <div id="minutesModal" class="minutes-modal">
+        <div class="minutes-content">
+            <div class="minutes-header">
+                <button class="minutes-close" onclick="closeMinutes()">×</button>
+                <h3 id="minutesTitle"></h3>
+            </div>
+            <div class="minutes-body">
+                <div class="minutes-section">
+                    <div class="minutes-section-title">要約</div>
+                    <div class="minutes-text" id="minutesSummary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="project-dashboard.js"></script>
+    </script>
+</body>
+</html>
